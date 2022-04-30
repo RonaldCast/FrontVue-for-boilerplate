@@ -3,7 +3,7 @@ import Ajax from "@/lib/ajax";
 import appconst from '../../lib/appconst'
 import Util from "@/lib/util";
 
-import {routers} from "../../router/router"
+import { routers } from "../../router/router"
 
 interface AppState {
     cachePage: Array<any>;
@@ -24,7 +24,7 @@ interface AppState {
 }
 
 export const useAppStore = defineStore({
-    id:"app", 
+    id: "app",
     state: () => ({
         cachePage: [],
         lang: '',
@@ -54,13 +54,13 @@ export const useAppStore = defineStore({
         dontCache: [],
         noticeList: [{ read: false, type: 0, title: 'First notice', description: 'One day ago' },
         { read: false, type: 1 }, { read: false, type: 0, title: 'Second notice', description: 'One month ago' }]
-    } as AppState), 
-    actions:{
-        async login( payload: any) {
-            let rep = await Ajax.post("/api/TokenAuth/Authenticate", payload.data);
-            var tokenExpireDate = payload.data.rememberMe ? (new Date(new Date().getTime() + 1000 * rep.data.result.expireInSeconds)) : undefined;
-            Util.abp.auth.setToken(rep.data.result.accessToken, tokenExpireDate);
-            Util.abp.utils.setCookieValue(appconst.authorization.encrptedAuthTokenName, rep.data.result.encryptedAccessToken, tokenExpireDate, Util.abp.appPath)
+    } as AppState),
+    actions: {
+        async login(payload: any) {
+            let resp = await Ajax.post("/api/TokenAuth/Authenticate", payload);
+            var tokenExpireDate = payload.rememberMe ? (new Date(new Date().getTime() + 1000 * resp.data.result.expireInSeconds)) : undefined;
+            Util.abp.auth.setToken(resp.data.result.accessToken, tokenExpireDate);
+            Util.abp.utils.setCookieValue(appconst.authorization.encrptedAuthTokenName, resp.data.result.encryptedAccessToken, tokenExpireDate, Util.abp.appPath)
         },
         logout() {
             localStorage.clear();
@@ -84,6 +84,6 @@ export const useAppStore = defineStore({
         setCurrentPageName(name: string) {
             this.currentPageName = name;
         },
- 
+
     }
 }) 
