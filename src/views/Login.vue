@@ -2,9 +2,20 @@
   <div class="containerLogin flex justify-center items-center">
     <div class="containerLogin--form">
       <h1 class="font-medium text-xl text-center">
-        Boilerplate, vue 3, pinia y typescript
+        Boilerplate, vue 3, pinia and typescript
       </h1>
       <h2 class="text-lg py-2">Log in</h2>
+      <p
+        class="text-blue-400 hover:text-blue-500 cursor-pointer"
+        @click="openDialogTenant = true"
+      >
+        {{
+          !!sessionStore.tenant ? sessionStore.tenant.name : "Select Tenant"
+        }}
+
+   
+      </p>
+
       <form @submit="onSubmit">
         <div class="mb-3">
           <label class="font-medium pt-2">User name</label>
@@ -34,6 +45,22 @@
           <button class="w-full el-button el-button--primary">Log in</button>
         </div>
       </form>
+      <el-dialog title="Change tenant" v-model="openDialogTenant" width="30%">
+        <div class="px-5">
+          <SelectedTenant
+            :date-change-tenant="dateChangeTenant"
+            @handle-selected-tenant="handleSelectedTenant"
+          />
+        </div>
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button @click="openDialogTenant = false">Cancel</el-button>
+            <el-button type="primary" @click="dateChangeTenant = new Date()"
+              >Change</el-button
+            >
+          </span>
+        </template>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -43,7 +70,9 @@ import { useField, useForm } from "vee-validate";
 import { object, string, boolean } from "yup";
 import { ElMessage, ElLoading } from "element-plus";
 import { useAppStore } from "@/stores/abpStores/useAppStore";
-import { toHandlers } from "vue";
+import { useSessionStore } from "@/stores/abpStores/useSessionStore";
+import { ref } from "vue";
+import SelectedTenant from "./SelectedTenant.vue";
 
 const schema = object({
   username: string().required(),
@@ -53,6 +82,9 @@ const schema = object({
 
 const router = useRouter();
 const appStore = useAppStore();
+const sessionStore = useSessionStore();
+const openDialogTenant = ref<boolean>(false);
+const dateChangeTenant = ref<Date>(new Date());
 
 const { handleSubmit, isSubmitting } = useForm({
   validationSchema: schema,
@@ -70,6 +102,11 @@ const { value: password, errorMessage: errorPassword } =
 
 const { value: remember } = useField<boolean>("remember");
 
+const handleSelectedTenant = ():void => {
+  sessionStore.init()
+  openDialogTenant.value = false
+}
+
 const onSubmit = handleSubmit(
   (value: any): void => {
     const loading = ElLoading.service({
@@ -86,7 +123,7 @@ const onSubmit = handleSubmit(
       .then(() => {
         loading.close();
         sessionStorage.setItem("rememberMe", value.remember ? "1" : "0");
-         location.reload();
+        location.reload();
       })
       .catch((e: any) => {
         ElMessage({
