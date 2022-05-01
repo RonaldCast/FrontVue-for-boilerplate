@@ -8,7 +8,8 @@ const router = createRouter({
     routes: routers
 });
 router.beforeEach((to: any, from, next) => {
-    // iView.LoadingBar.start();
+
+   
     Util.title(to.meta.title);
     if (Cookies.get('locking') === '1' && to.name !== 'locking') {
         next({
@@ -17,11 +18,14 @@ router.beforeEach((to: any, from, next) => {
         });
     } else if (Cookies.get('locking') === '0' && to.name === 'locking') {
         next(false);
-    } else {
-        console.log( !Util.abp.session.userId, to )
-        
+    } else {         
         if (!Util.abp.session.userId && to.meta.guest == true) {
             next();
+        }
+        if (!!Util.abp.session.userId && to.meta.guest == true) {
+            next({
+                name: 'home'
+            });
         }
         else if (!Util.abp.session.userId && to.name !== 'login') {
             next({
@@ -53,7 +57,6 @@ router.beforeEach((to: any, from, next) => {
 });
 
 router.afterEach((to) => {
-    // iView.LoadingBar.finish();
     window.scrollTo(0, 0);
 });
 

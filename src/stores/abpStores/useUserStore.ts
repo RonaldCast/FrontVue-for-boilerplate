@@ -4,19 +4,24 @@ import type Role from "./models/role";
 import User from "./models/user";
 import type ListState from "./models/list-state";
 import type PageResult from "./models/page-result";
-
-
+import type PageFilterUser from "./models/PageFilterUser";
+import type CreateUser from "./models/createUser"
 interface UserState extends ListState<User> {
     editUser: User,
-    roles: Role[]
+    roles: Role[],
+    keyword: string,
+    isActive: boolean | null
+
 }
 
-export const useAccountStore = defineStore({
+export const useUserStore = defineStore({
     id: "user",
     state: () => ({
         totalCount: 0,
         currentPage: 1,
         pageSize: 10,
+        keyword: "",
+        isActive:null,
         list: new Array<User>(),
         loading: false,
         editUser: new User(),
@@ -24,43 +29,44 @@ export const useAccountStore = defineStore({
     } as UserState),
 
     actions: {
-        async getAll(payload: any) {
+        async getAll(payload: PageFilterUser) {
             this.loading = true;
-            let reponse = await Ajax.get('/api/services/app/User/GetAll', { params: payload.data });
+            let reponse = await Ajax.get('/api/services/app/User/GetAll', { params: payload });
             this.loading = false;
             let page = reponse.data.result as PageResult<User>;
             this.totalCount = page.totalCount;
             this.list = page.items;
         },
-        async create( payload: any) {
-            await Ajax.post('/api/services/app/User/Create', payload.data);
+        async create(payload: CreateUser) {
+            await Ajax.post('/api/services/app/User/Create', payload);
         },
-        async update( payload: any) {
-            await Ajax.put('/api/services/app/User/Update', payload.data);
+        async update(payload: any) {
+            await Ajax.put('/api/services/app/User/Update', payload);
         },
-        async delete( payload: any) {
-            await Ajax.delete('/api/services/app/User/Delete?Id=' + payload.data.id);
+        async delete(payload: any) {
+            await Ajax.delete('/api/services/app/User/Delete?Id=' + payload.id);
         },
-        async get( payload: any) {
+        async get(payload: any) {
             let reponse = await Ajax.get('/api/services/app/User/Get?Id=' + payload.id);
             return reponse.data.result as User;
         },
         async getRoles() {
-            let reponse = await Ajax.get('/api/services/app/User/GetRoles');
-            this.roles = reponse.data.result.items as Role[];
+            let resp = await Ajax.get('/api/services/app/User/GetRoles');
+            this.roles = resp.data.result.items as Role[];
+          
         },
         async changeLanguage(payload: any) {
-            await Ajax.post('/api/services/app/User/ChangeLanguage', payload.data);
-        }, 
+            await Ajax.post('/api/services/app/User/ChangeLanguage', payload);
+        },
 
-        setCurrentPage(page:number){
-            this.currentPage=page;
+        setCurrentPage(page: number) {
+            this.currentPage = page;
         },
-        setPageSize(pagesize:number){
-            this.pageSize=pagesize;
+        setPageSize(pagesize: number) {
+            this.pageSize = pagesize;
         },
-        edit(user:User){
-            this.editUser=user;
+        edit(user: User) {
+            this.editUser = user;
         }
     }
 

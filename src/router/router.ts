@@ -1,4 +1,4 @@
-import type {RouteRecordRaw} from 'vue-router'
+import type { RouteRecordRaw } from 'vue-router'
 
 declare global {
     interface RouterMeta {
@@ -11,13 +11,13 @@ declare global {
 }
 import main from '../views/Main.vue'
 
-export const locking:RouteRecordRaw = {
+export const locking: RouteRecordRaw = {
     path: '/locking',
     name: 'locking',
     component: () => import('../views/LockingView.vue')
 };
 export const loginRouter: RouteRecordRaw = {
-    path: '/',
+    path: '/login',
     name: 'login',
     meta: {
         title: 'LogIn'
@@ -25,24 +25,27 @@ export const loginRouter: RouteRecordRaw = {
     component: () => import('../views/Login.vue')
 };
 export const otherRouters: RouteRecordRaw = {
-    path: '/main',
+    path: '/',
     name: 'main',
     meta: { title: 'ManageMenu', permission: '', },
     component: main,
     children: [
-        { path: 'home', meta: { title: 'HomePage' }, name: 'home', component: () => import('../views/HomeView.vue') }
+        { path: 'home', name: "home", meta: { title: 'HomePage', permission: '' }, component: () => import('../views/HomeView.vue') },
+        { path: 'user', name: "user", meta: { title: 'UserPage', permission: '' }, component: () => import('../views/User/Index.vue') },
+        { path: 'role', name: "role", meta: { title: 'UserPage', permission: '' }, component: () => import('../views/Role/Index.vue') },
+        { path: 'tenant', name: "tenant", meta: { title: 'UserPage', permission: '' }, component: () => import('../views/Tenant/Index.vue') }
     ]
 }
 
 export const AboutRouter: RouteRecordRaw = {
-    path:"/about", 
-    name: "about", 
-    meta:  {title:"About", guest:true},
+    path: "/about",
+    name: "about",
+    meta: { title: "About", guest: true },
     component: () => import("../views/AboutView.vue")
 }
-export const routers: Array<RouteRecordRaw>= [
+export const routers: Array<RouteRecordRaw> = [
     loginRouter,
     locking,
-    otherRouters, 
+    otherRouters,
     AboutRouter
 ];

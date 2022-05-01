@@ -7,16 +7,15 @@ import App from "./App.vue";
 import router from "./router";
 import Ajax from './lib/ajax';
 import Util from './lib/util';
-import "./assets/index.css"
+
+import "./assets/tailwindStyle.css";
 
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
-
+import "./assets/index.css"
 const app = createApp(App);
-app.use(createPinia());
-app.use(router);
-app.use(ElementPlus);
 
+app.use(ElementPlus);
 
 
 if(!Util.abp.utils.getCookieValue('Abp.Localization.CultureName')){
@@ -26,6 +25,8 @@ if(!Util.abp.utils.getCookieValue('Abp.Localization.CultureName')){
   
 Ajax.get('/AbpUserConfiguration/GetAll').then(data=>{
     Util.abp=Util.extend(true,Util.abp,data.data.result);
+    app.use(createPinia());
+    app.use(router);
     app.mount("#app");
 })
 

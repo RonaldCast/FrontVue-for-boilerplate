@@ -5,7 +5,6 @@ const ajax = axios.create({
     timeout: 30000
 });
 ajax.interceptors.request.use(function (config) {
-    console.log(window)
     if(!!window.abp.auth.getToken()){
         config.headers.common["Authorization"]="Bearer "+window.abp.auth.getToken();
     }

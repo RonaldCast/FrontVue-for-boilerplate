@@ -356,8 +356,6 @@ var abp = abp || {};
         if (logLevel != undefined && logLevel < abp.log.level) {
             return;
         }
-
-        console.log(logObject);
     };
 
     abp.log.debug = function (logObject) {

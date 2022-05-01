@@ -1,4 +1,5 @@
 
+import router from "@/router";
 import { useAppStore } from "@/stores/abpStores/useAppStore"
 class Util {
     abp: any = window.abp;
@@ -37,10 +38,13 @@ class Util {
         }
     }
     getRouterObjByName(routers: Array<any>, name?: string): any {
+        
+       
         if (!name || !routers || !routers.length) {
             return null;
         }
-        // debugger;
+        //debugger;
+
         let routerObj = null;
         for (let item of routers) {
             if (item.name === name) {
