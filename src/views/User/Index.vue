@@ -9,6 +9,15 @@
     </div>
     <TableUser :list="userStore.list" />
 
+    <el-pagination
+      small
+      background
+      layout="prev, pager, next"
+      :total="userStore.totalCount"
+      :page-size="userStore.pageSize"
+      v-model:current-page.sync="currentPage"
+      class="mt-4"
+    />
     <el-dialog
       title="Create new user"
       v-model="openDialogCreateUser"
@@ -38,14 +47,22 @@ import TableUser from "./components/TableUser.vue";
 import CreateUser from "./components/CreateUser.vue";
 import type PageFilterUserComp from "./models/PageFilterUserComp";
 import { useUserStore } from "@/stores/abpStores/useUserStore";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import type CreateUserModel from "@/stores/abpStores/models/createUser";
 import { ElMessage, ElLoading } from "element-plus";
 
 const userStore = useUserStore();
 const openDialogCreateUser = ref<boolean>(false);
 const dateSendCreateUser = ref<Date>(new Date());
+const currentPage = ref<number>(userStore.currentPage);
 
+watch(currentPage, async (newValue) => {
+  userStore.$patch((state) => {
+    state.currentPage = newValue;
+  });
+
+  await getUser();
+});
 onMounted(async () => {
   await getUser();
 });
@@ -77,16 +94,16 @@ const createUser = (data: CreateUserModel) => {
   userStore
     .create(data)
     .then(async () => {
-      userStore.$patch( (state) => {
-        state.currentPage = 1
-      })
-      await getUser()
+      userStore.$patch((state) => {
+        state.currentPage = 1;
+      });
+      await getUser();
       loading.close();
       openDialogCreateUser.value = false;
     })
     .catch((e) => {
       loading.close();
-    });;
+    });
 };
 </script>
 <style></style>

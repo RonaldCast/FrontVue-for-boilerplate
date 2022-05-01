@@ -19,7 +19,7 @@ export const useUserStore = defineStore({
     state: () => ({
         totalCount: 0,
         currentPage: 1,
-        pageSize: 10,
+        pageSize: 3,
         keyword: "",
         isActive:null,
         list: new Array<User>(),
@@ -43,8 +43,8 @@ export const useUserStore = defineStore({
         async update(payload: any) {
             await Ajax.put('/api/services/app/User/Update', payload);
         },
-        async delete(payload: any) {
-            await Ajax.delete('/api/services/app/User/Delete?Id=' + payload.id);
+        async delete(id: number) {
+            await Ajax.delete('/api/services/app/User/Delete?Id=' + id);
         },
         async get(payload: any) {
             let reponse = await Ajax.get('/api/services/app/User/Get?Id=' + payload.id);
